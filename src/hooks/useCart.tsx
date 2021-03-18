@@ -64,9 +64,9 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
   const removeProduct = (productId: number) => {
     try {
       let products = [...cart];
-      let p = products.find((product) => product.id === productId);
-      if (p) {
-        p.amount--;
+      let productIndex = products.findIndex((product) => product.id === productId);
+      if (productIndex > -1) {
+        products.splice(productIndex, 1);
         setCart(products)
       } else {
         toast.error('Erro na remoção do produto');
@@ -81,9 +81,22 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
     amount,
   }: UpdateProductAmount) => {
     try {
-      // TODO
+      let products = [...cart];
+      let product = products.find((product) => product.id === productId);
+      if (product) {
+        const response = await api.get<Stock>('/stock/' + productId)
+        const stock = response.data;
+        if (amount <= stock.amount) {
+          product.amount = amount
+          setCart(products)
+        } else {
+          toast.error('Quantidade solicitada fora de estoque');
+        }
+      } else {
+        toast.error('Quantidade solicitada fora de estoque');
+      }
     } catch {
-      // TODO
+      toast.error('Erro na alteração de quantidade do produto');
     }
   };
 
