@@ -46,6 +46,9 @@ const Cart = (): JSX.Element => {
   }
 
   function handleProductDecrement(product: Product) {
+    if (product.amount === 1) {
+      return;
+    }
     updateProductAmount({productId: product.id, amount: product.amount - 1})
   }
 
@@ -67,7 +70,7 @@ const Cart = (): JSX.Element => {
         </thead>
         <tbody>
           {cart.map((product) => (
-            <tr data-testid="product">
+            <tr data-testid="product" key={product.id}>
             <td>
               <img src={product.image} alt={product.title} />
             </td>
